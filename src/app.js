@@ -1,5 +1,6 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
+const path = require("path")
 
 
 
@@ -8,6 +9,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(express.static(path.join(__dirname, "public")))
 
 /**
  * - Routes required
@@ -21,7 +23,15 @@ const transactionRoutes = require("./routes/transaction.routes")
  */
 
 app.get("/", (req, res) => {
-    res.send("Ledger Service is up and running")
+    res.sendFile(path.join(__dirname, "public", "index.html"))
+})
+
+app.get("/health", (req, res) => {
+    res.json({
+        status: "ok",
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    })
 })
 
 app.use("/api/auth", authRouter)

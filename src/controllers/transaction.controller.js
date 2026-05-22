@@ -236,8 +236,51 @@ async function createInitialFundsTransaction(req, res) {
 
 }
 
+async function getTransactionSummary(req, res) {
+    try {
+        const userAccounts = await accountModel.find({ user: req.user._id }, '_id');
+        const accountIds = userAccounts.map(acc => acc._id);
+
+        const summary = await ledgerModel.aggregate([
+            { $match: { account: { $in: accountIds } } },
+            {
+                $group: {
+                    _id: null,
+                    totalReceived: {
+                        $sum: { $cond: [{ $eq: ["$type", "CREDIT"] }, "$amount", 0] }
+                    },
+                    totalSent: {
+                        $sum: { $cond: [{ $eq: ["$type", "DEBIT"] }, "$amount", 0] }
+                    },
+                    totalTransactions: { $sum: 1 }
+                }
+            }
+        ]);
+
+        if (summary.length === 0) {
+            return res.status(200).json({
+                totalReceived: 0,
+                totalSent: 0,
+                netBalance: 0,
+                totalTransactions: 0
+            });
+        }
+
+        const { totalReceived, totalSent, totalTransactions } = summary[0];
+        return res.status(200).json({
+            totalReceived,
+            totalSent,
+            netBalance: totalReceived - totalSent,
+            totalTransactions
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createTransaction,
-    createInitialFundsTransaction
+    createInitialFundsTransaction,
+    getTransactionSummary
 }
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Ledger</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: monospace;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #ffffff;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        h2 {
+            color: #aaaaaa;
+        }
+        ul {
+            list-style-type: square;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Backend Ledger</h1>
+    <div class="status">
+        <span class="indicator"></span> Service is LIVE
+    </div>
+    
+    <h2>Available Base API Routes</h2>
+    <ul>
+        <li>/api/auth</li>
+        <li>/api/accounts</li>
+        <li>/api/transactions</li>
+        <li>/health</li>
+    </ul>
+</body>
+</html>
