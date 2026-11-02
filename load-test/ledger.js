@@ -1,26 +1,31 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-// Ledger load test - read path (GET /api/accounts) with per-VU login.
+// Ledger load test - read path (GET /api/accounts), sustained 50 VUs.
+//
+// Why 50: a 2026-11-03 stress probe at 200 VUs collapsed to 5.4 req/s with
+// 20.8% errors - the free tier (Render + Atlas) saturates between 50 and 100
+// concurrent users. 50 VUs is the level this deployment actually sustains
+// (19.1 req/s, 3.64% errors, 302ms median, p(95) 3.14s).
+//
+// Thresholds encode the target, not the claim: p(95) < 2s, errors < 5%.
+// On free-tier infrastructure the error threshold passes at 50 VUs; the
+// p(95) threshold does not (3.14s).
 //
 // Run:
-//   k6 run -e LEDGER_BASE_URL=https://your-ledger-url \
-//          -e LEDGER_EMAIL=loadtest@example.com \
-//          -e LEDGER_PASSWORD=your-password \
+//   k6 run -e LEDGER_BASE_URL=https://ledger-hza3.onrender.com \
+//          -e LEDGER_EMAIL=<load-test-user-email> \
+//          -e LEDGER_PASSWORD=<load-test-user-password> \
 //          load-test/ledger.js
 //
-// Notes:
-// - No hardcoded tokens: each VU logs in once and caches its token.
-// - Thresholds match the figures quoted in the portfolio: p(95) < 2s, errors < 5%.
-// - Write path (POST /api/transactions) intentionally excluded from load: each
-//   transfer holds a MongoDB session open ~15s (PENDING -> COMPLETED), so write
-//   concurrency is limited by design. Idempotency under replay is proven
-//   deterministically by the Jest integration suite instead.
+// Write path (POST /api/transactions) intentionally excluded: each transfer
+// holds a MongoDB session open ~15s (PENDING -> COMPLETED). Idempotency under
+// replay is proven deterministically by the Jest integration suite instead.
 
 export const options = {
   stages: [
     { duration: '30s', target: 50 },
-    { duration: '1m', target: 200 },
+    { duration: '1m', target: 50 },
     { duration: '30s', target: 0 },
   ],
   thresholds: {

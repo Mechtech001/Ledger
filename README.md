@@ -82,7 +82,7 @@ npm test
 
 ## Load testing
 
-k6 script at `load-test/ledger.js` — read path (`GET /api/accounts`) at 200 concurrent VUs. Each VU logs in once via env-provided credentials; no tokens are hardcoded.
+k6 script at `load-test/ledger.js` — read path (`GET /api/accounts`), 50 concurrent VUs sustained for 1 minute (30s ramp up/down). Each VU logs in once via env-provided credentials; no tokens are hardcoded.
 
 ```bash
 k6 run -e LEDGER_BASE_URL=https://ledger-hza3.onrender.com \
@@ -91,9 +91,20 @@ k6 run -e LEDGER_BASE_URL=https://ledger-hza3.onrender.com \
        load-test/ledger.js
 ```
 
-Thresholds: p(95) < 2s, error rate < 5%.
+Thresholds encode the target, not the claim: p(95) < 2s, error rate < 5%.
 
-Results from the May 2026 run against the Render deployment: **200 VUs · ~32 req/s · 99.8% success · 1.78s**. Re-run any time with the command above.
+Results from the 2026-11-03 run against the live deployment (Render free tier + Atlas free tier):
+
+| Metric | Result |
+|---|---|
+| Sustained load | 50 VUs, 2 min |
+| Throughput | 19.1 req/s |
+| Error rate | 3.64% (threshold met) |
+| Median latency | 302 ms |
+| Requests under 2s | 94% |
+| p(95) latency | 3.14 s — threshold NOT met on free-tier infrastructure |
+
+Stress probe (same script, 200 VUs): throughput collapsed to 5.4 req/s with 20.8% errors. The free tier saturates between 50 and 100 concurrent users — the ceiling is infrastructure, not application logic. Median latency stays under 600 ms even at 100 VUs.
 
 Note: the write path is excluded from load by design — each transfer holds a MongoDB session open for ~15s (PENDING → COMPLETED), so write concurrency is intentionally limited. Idempotency under replay is proven deterministically by the integration suite above.
 
