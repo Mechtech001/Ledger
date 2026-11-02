@@ -1,15 +1,24 @@
 {
   "name": "backend-ledger",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Financial transaction backend - idempotent writes, double-entry ledger, JWT auth, RBAC",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "dev": "npx nodemon server.js",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "expressjs",
+    "jwt",
+    "mongodb",
+    "nodejs",
+    "nodemailer",
+    "rbac",
+    "idempotency"
+  ],
+  "author": "Aditya Sharma",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -20,5 +29,10 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5",
     "nodemailer": "^7.0.12"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.3.0",
+    "supertest": "^7.1.0"
   }
 }

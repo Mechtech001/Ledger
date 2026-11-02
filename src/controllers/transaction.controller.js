@@ -145,6 +145,9 @@ async function createTransaction(req, res) {
             { session }
         )
 
+        // Keep the in-memory document in sync with the DB update,
+        // so the response reflects the final state.
+        transaction.status = "COMPLETED"
 
         await session.commitTransaction()
         session.endSession()
