@@ -1,5 +1,7 @@
 # Backend Ledger
 
+[![CI](https://github.com/Mechtech001/Ledger/actions/workflows/ci.yml/badge.svg)](https://github.com/Mechtech001/Ledger/actions/workflows/ci.yml)
+
 **Live:** [https://ledger-hza3.onrender.com](https://ledger-hza3.onrender.com)
 
 A financial transaction backend built with Node.js, Express, and MongoDB.
